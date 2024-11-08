@@ -6,20 +6,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import error.ExceptionMessage;
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import model.ProductInventory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class InputViewTest {
-    InputView inputView = new InputView();
+    ProductInventory productInventory = new ProductInventory();
+    InputView inputView = new InputView(productInventory);
+
+
+    public void mockSystemSetIn(String input) {
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+    }
 
     @Test
     @DisplayName("사용자에게 값을 입력받고 이를 반환하는 테스트입니다.")
     public void 사용자에게_값_입력받기_테스트() {
         String testInputString = "Hello World";
 
-        System.setIn(new ByteArrayInputStream(testInputString.getBytes()));
+        mockSystemSetIn(testInputString);
         String actualReadInput = inputView.readInput("사용자에게 입력받는 테스트입니다.");
 
         assertEquals(testInputString, actualReadInput);
@@ -38,7 +48,9 @@ public class InputViewTest {
     public void 사용자의_입력값이_빈값인지_확인하기_예외_테스트_공백일때(String testInputValue) {
         assertThatThrownBy(() -> inputView.validateInputNotEmpty(testInputValue))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_EMPTY.toString());
+                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString())
+        ;
+
     }
 
     @Test
@@ -46,36 +58,141 @@ public class InputViewTest {
     public void 사용자의_입력값이_빈값인지_확인하기_예외_테스트_널값일때() {
         assertThatThrownBy(() -> inputView.validateInputNotEmpty(null))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_EMPTY.toString());
+                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString())
+        ;
+    }
+
+    @ParameterizedTest
+    @DisplayName("상품 정보 입력 문자열이 [상품이름-갯수] 혹은 [상품이름-갯수],[상품이름-갯수], ... 형식으로 되어있는지 확인하는 테스트입니다. ")
+    @ValueSource(strings = {"[콜라-1]", "[콜라-10],[물-2]", "[콜라-1],[물-2],[사이다-3]"})
+    public void 상품_정보_입력_형식_검증_테스트(String testInputPurchaseInfo) {
+        assertDoesNotThrow(() -> inputView.validateInputPurchaseInfoFormat(testInputPurchaseInfo));
+    }
+
+    @ParameterizedTest
+    @DisplayName("상품 정보 입력 시, 상품 이름에 숫자와 특수기호가 오는 경우 예외를 던지는 테스트입니다. ")
+    @ValueSource(strings = {"[123-1]", "[콜라-1],[123-1]", "[!12-1]", "[콜라12-1]"})
+    public void 상품_정보_입력_형식_검증_예외_테스트_상품이름에_숫자나_특수기호가_올때(String testInputPurchaseInfo) {
+        assertThatThrownBy(() -> inputView.validateInputPurchaseInfoFormat(testInputPurchaseInfo))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString());
+    }
+
+    @ParameterizedTest
+    @DisplayName("상품 정보 입력 시, 구매 갯수에 숫자형식이 아닌 값이 있는 경우 예외를 던지는 테스트입니다. ")
+    @ValueSource(strings = {"[콜라-콜라]", "[콜라-1],[콜라-콜라]", "[콜라-!!]", "[콜라-]", "[콜라-010]"})
+    public void 상품_정보_입력_형식_검증_예외_테스트_구매갯수에_숫자형식이_아닌_값이_올때(String testInputPurchaseInfo) {
+        assertThatThrownBy(() -> inputView.validateInputPurchaseInfoFormat(testInputPurchaseInfo))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString());
     }
 
     @Test
-    public void 구매할_상품_정보_입력받기_테스트() {
-
+    @DisplayName("상품 정보를 여러 개 입력시, 쉼표(,) 뒤에 추가로 상품 정보를 적지 않은 경우 예외를 던지는 테스트입니다. ")
+    public void 상품_정보_입력_형식_검증_예외_테스트_쉼표_뒤가_비어있을_때() {
+        String testInputPurchaseInfo = "[콜라-10],";
+        assertThatThrownBy(() -> inputView.validateInputPurchaseInfoFormat(testInputPurchaseInfo))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString());
     }
 
     @Test
-    public void 구매할_상품_정보_입력받기_예외_테스트_입력형식에_맞지않을때() {
+    @DisplayName("하나의 상품 정보에 대해서 이름을 추출하는 테스트입니다. ")
+    public void 상품_정보에서_상품_이름_추출_테스트() {
+        String testInputPurchase = "[콜라-1]";
+        String expectResult = "콜라";
+        String actualResult = inputView.extractPurchaseName(testInputPurchase);
 
+        assertEquals(expectResult, actualResult);
     }
 
     @Test
-    public void 구매할_상품_정보_입력받기_예외_테스트_재고에_없는_상품이_있을때() {
+    @DisplayName("하나의 상품 정보에 대해서 상품 갯수를 추출하는 테스트입니다. ")
+    public void 상품_정보에서_상품_갯수_추출_테스트() {
+        String testInputPurchase = "[콜라-10]";
+        int expectResult = 10;
+        int actualResult = inputView.extractQuantity(testInputPurchase);
 
+        assertEquals(expectResult, actualResult);
     }
 
     @Test
-    public void 구매할_상품_정보_입력받기_예외_테스트_재고수량을_초과하여_입력할때() {
+    @DisplayName("문자열을 구분자인 쉼표(,)를 기준으로 자르는 테스트입니다. ")
+    public void 문자열을_구분자인_쉼표로_자르는_테스트() {
+        String testInputPurchaseInfo = "[콜라-1],[물-2]";
+        List<String> expectedResult = new ArrayList<>(List.of("[콜라-1]", "[물-2]"));
+        List<String> actualResult = inputView.delimiterInputPurchaseInfo(testInputPurchaseInfo);
 
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    public void 예_아니오_입력받기_테스트() {
+    @DisplayName("사용자가 입력한 상품 정보로부터 (상품명,구매갯수)로 구성된 맵 객체를 반환하는 테스트입니다. ")
+    public void 구매할_상품_정보로_맵반환_테스트() {
+        String testInputPurchaseInfo = "[콜라-1],[물-2]";
+        HashMap<String, Integer> expectedResult = new HashMap<>();
+        expectedResult.put("콜라", 1);
+        expectedResult.put("물", 2);
 
+        HashMap<String, Integer> actualResult = inputView.extractPurchaseInfoToMap(testInputPurchaseInfo);
+
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    public void 예_아니오_입력받기_예외_테스트_Y_N_이외의_문자를_입력할때() {
+    @DisplayName("사용자에게 구매할 상품 정보 입력받고, 상품 정보를 담은 맵 객체 반환받는 테스트입니다.")
+    public void 사용자에게_구매할_상품_정보_입력받는_테스트() {
+        String testInputPurchaseInfo = "[콜라-1],[물-2],[오렌지주스-3]";
+        mockSystemSetIn(testInputPurchaseInfo);
+        HashMap<String, Integer> expectedResult = new HashMap<>();
+        expectedResult.put("콜라", 1);
+        expectedResult.put("물", 2);
+        expectedResult.put("오렌지주스", 3);
+        HashMap<String, Integer> actualResult = inputView.readPurchaseInfo(
+                OutputMessage.INPUT_PURCHASE_INFO_GUIDE_MESSAGE.toString()
+                        + OutputMessage.INPUT_PURCHASE_INFO_EXAMPLE_MESSAGE);
+        assertEquals(expectedResult, actualResult);
+    }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"Y", "N"})
+    @DisplayName("사용자에게 받은 입력값이 Y혹은 N인지 확인하는 테스트입니다.")
+    public void Y_혹은_N으로_입력받기_테스트(String testInputYesOrNoInfo) {
+        assertDoesNotThrow(() -> inputView.validateInputYesOrNoInfo(testInputYesOrNoInfo));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Yeah", "NOPE"})
+    @DisplayName("사용자에게 받은 입력값이 Y/N 이외의 문자를 입력할때 예외를 던지는 테스트입니다. ")
+    public void Y_혹은_N으로_입력받기_예외_테스트_Y_N_이외의_문자를_입력할때(String testInputYesOrNoInfo) {
+        assertThatThrownBy(() -> inputView.validateInputYesOrNoInfo(testInputYesOrNoInfo))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString());
+    }
+
+    @Test
+    @DisplayName("사용자에게 Y 혹은 N으로 응답 받고 그에 맞는 True와 False를 반환하는 테스트입니다. ")
+    public void 사용자에게_Y_혹은_N으로_입력받기_통합_테스트_Y() {
+        String testInputYesOrNoInfo = "Y";
+        boolean expectedResult = true;
+        mockSystemSetIn(testInputYesOrNoInfo);
+
+        boolean actualResult = inputView.readYesOrNoInfo(
+                OutputMessage.THANK_YOU_ANYTHING_ELSE_MESSAGE.toString() + OutputMessage.INPUT_YES_OR_NO_GUIDE_MESSAGE);
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    @DisplayName("사용자에게 Y 혹은 N으로 응답 받고 그에 맞는 True와 False를 반환하는 테스트입니다. ")
+    public void 사용자에게_Y_혹은_N으로_입력받기_통합_테스트_N() {
+        String testInputYesOrNoInfo = "N";
+        boolean expectedResult = false;
+        mockSystemSetIn(testInputYesOrNoInfo);
+
+        boolean actualResult = inputView.readYesOrNoInfo(
+                OutputMessage.THANK_YOU_ANYTHING_ELSE_MESSAGE.toString() + OutputMessage.INPUT_YES_OR_NO_GUIDE_MESSAGE);
+
+        assertEquals(expectedResult, actualResult);
     }
 }
