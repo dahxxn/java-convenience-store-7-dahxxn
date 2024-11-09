@@ -32,9 +32,9 @@ public class Promotion {
         int buySetCount = buyCount / totalCount;
         int promotionStockSetCount = promotionStock / totalCount;
         if (buySetCount > promotionStockSetCount) {
-            return promotionStockSetCount;
+            return promotionStockSetCount * totalCount - buyCount;
         }
-        return buySetCount;
+        return 0;
     }
 
     public int calculateRemainingCount(int setCount, int initialCount) {

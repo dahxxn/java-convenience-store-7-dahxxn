@@ -10,6 +10,8 @@ import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class PromotionTest {
     Promotion promotion;
@@ -37,13 +39,24 @@ public class PromotionTest {
         }, LocalDate.of(2024, 10, 10).atStartOfDay());
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("구매 가능한 프로모션 상품 세트 수를 확인하는 테스트입니다.")
-    public void 구매_가능한_프로모션_상품_세트_수량_확인_테스트() {
-        int buyCount = 5;
+    @ValueSource(ints = {5, 9})
+    public void 구매_가능한_프로모션_상품_세트_수량_확인_테스트(int buyCount) {
         int promotionStock = 10;
         int result = promotion.checkPromotionPossible(buyCount, promotionStock);
-        int expectedResult = 2;
+        int expectedResult = 0;
+
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
+    @DisplayName("구매 가능한 프로모션 상품 세트 수를 확인하는 테스트입니다.")
+    public void 구매_가능한_프로모션_상품_세트_수량_확인_테스트_프로모션_재고가_부족할때() {
+        int buyCount = 12;
+        int promotionStock = 10;
+        int result = promotion.checkPromotionPossible(buyCount, promotionStock);
+        int expectedResult = -2;
 
         assertEquals(expectedResult, result);
     }
@@ -78,6 +91,16 @@ public class PromotionTest {
         boolean result = promotion.checkGetMorePromotion(remainBuyCount, promotionStock);
 
         assertTrue(result);
+    }
+
+    @Test
+    @DisplayName("구매 가능한 프로모션 상품 세트 수를 확인하는 테스트입니다.")
+    public void 구매_가능한_프로모션_상품_세트_수량_확인_테스트_추가구매_없을떄() {
+        int remainBuyCount = 0;
+        int promotionStock = 6;
+        boolean result = promotion.checkGetMorePromotion(remainBuyCount, promotionStock);
+
+        assertFalse(result);
     }
 
 }
