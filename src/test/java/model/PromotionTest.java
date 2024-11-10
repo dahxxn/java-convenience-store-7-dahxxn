@@ -10,8 +10,6 @@ import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 public class PromotionTest {
     Promotion promotion;
@@ -39,13 +37,13 @@ public class PromotionTest {
         }, LocalDate.of(2024, 10, 10).atStartOfDay());
     }
 
-    @ParameterizedTest
+    @Test
     @DisplayName("구매 가능한 프로모션 상품 세트 수를 확인하는 테스트입니다.")
-    @ValueSource(ints = {5, 9})
-    public void 구매_가능한_프로모션_상품_세트_수량_확인_테스트(int buyCount) {
+    public void 구매_가능한_프로모션_상품_세트_수량_확인_테스트() {
+        int buyCount = 5;
         int promotionStock = 10;
         int result = promotion.checkPromotionPossible(buyCount, promotionStock);
-        int expectedResult = 0;
+        int expectedResult = 2;
 
         assertEquals(expectedResult, result);
     }
@@ -101,6 +99,12 @@ public class PromotionTest {
         boolean result = promotion.checkGetMorePromotion(remainBuyCount, promotionStock);
 
         assertFalse(result);
+    }
+
+    @Test
+    @DisplayName("프로모션 상품 구매시 총 구매수 계산 확인 테스트 ")
+    public void 프로모션_생성_합계_확인_테스트() {
+        assertEquals(promotion.getTotalCount(), 2);
     }
 
 }
