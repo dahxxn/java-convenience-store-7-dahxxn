@@ -8,7 +8,7 @@ public enum ExceptionMessage {
     ERROR_MESSAGE_CANNOT_READ_FILE("파일을 찾을 수 없습니다."),
     ERROR_MESSAGE_CANNOT_FIND_PROMOTION("해당 프로모션을 찾을 수 없습니다."),
     ERROR_MESSAGE_ALREADY_HAVE_PROMOTION("해당 프로모션은 이미 존재합니다."),
-    ;
+    ERROR_MESSAGE_PRODUCT_ALREADY_HAVE_PROMOTION("상품은 두개 이상의 프로모션을 가질 수 없습니다. ");
 
     private final String ERROR_MESSAGE_HEAD = "[ERROR] ";
     private final String message;
