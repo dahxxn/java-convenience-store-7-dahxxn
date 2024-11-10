@@ -4,21 +4,30 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import camp.nextstep.edu.missionutils.Console;
 import error.ExceptionMessage;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import model.ProductInventory;
+import model.PromotionInventory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class InputViewTest {
-    ProductInventory productInventory = new ProductInventory();
+    PromotionInventory promotionInventory = new PromotionInventory();
+    ProductInventory productInventory = new ProductInventory(promotionInventory);
     InputView inputView = new InputView(productInventory);
 
+
+    @AfterEach
+    public void tearDown() {
+        Console.close();
+    }
 
     public void mockSystemSetIn(String input) {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
