@@ -17,15 +17,13 @@ public class InputView {
     OutputView outputView = new OutputView();
     ProductInventory productInventory;
 
-    InputView(ProductInventory productInventory) {
+    public InputView(ProductInventory productInventory) {
         this.productInventory = productInventory;
     }
 
     public String readInput(String message) {
         outputView.printMessage(message);
-        String inputValue = Console.readLine();
-        Console.close();
-        return inputValue;
+        return Console.readLine();
     }
 
     public String validateInputNotEmpty(String inputValue) {
