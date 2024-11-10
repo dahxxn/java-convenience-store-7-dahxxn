@@ -20,6 +20,14 @@ public class Promotion {
         this.totalCount = buyCount + getCount;
     }
 
+    public int getGetCount() {
+        return getCount;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
     public boolean isPromotionNow() {
         LocalDateTime now = DateTimes.now();
         if (startAt.isBefore(now) && endAt.isAfter(now)) {
@@ -34,7 +42,7 @@ public class Promotion {
         if (buySetCount > promotionStockSetCount) {
             return promotionStockSetCount * totalCount - buyCount;
         }
-        return 0;
+        return buySetCount;
     }
 
     public int calculateRemainingCount(int setCount, int initialCount) {
