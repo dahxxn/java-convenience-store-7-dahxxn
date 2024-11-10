@@ -16,9 +16,21 @@ public class ProductInventory {
     static final String NULL_PROMOTION = "null";
     PromotionInventory promotionInventory;
 
-    public ProductInventory() {
-        this.promotionInventory = new PromotionInventory();
+    public ProductInventory(PromotionInventory promotionInventory) {
+        this.promotionInventory = promotionInventory;
         setProductInventory();
+    }
+
+    public List<String> getProductStockInfo() {
+        List<String> totalProductStockInfo = new ArrayList<>();
+        for (Product product : products) {
+            if (hasPromotionProduct(product.getName())) {
+                Product promotionProduct = findPromotionProduct(product.getName());
+                totalProductStockInfo.add(promotionProduct.getProductStockInfo());
+            }
+            totalProductStockInfo.add(product.getProductStockInfo());
+        }
+        return totalProductStockInfo;
     }
 
     public void setProductInfo(List<String> productInfo) {
@@ -39,18 +51,43 @@ public class ProductInventory {
         }
     }
 
-    public void addProduct(String name, int quantity, int price, String promotion) {
+    public void handleGeneralProductAdd(String name, int quantity, int price, String promotion) {
         Product product = new Product(name, quantity, price, promotion);
+        if (productIndex.containsKey(name)) {
+            Product findProduct = findProduct(name);
+            findProduct.addStock(quantity);
+            return;
+        }
+        addNewProduct(name, product);
+    }
+
+    public void addNewProduct(String name, Product product) {
+        products.add(product);
+        productIndex.put(name, products.size() - 1);
+    }
+
+    public void handlePromotionProductAdd(String name, int quantity, int price, String promotion) {
+        Product product = new Product(name, quantity, price, promotion);
+        if (hasPromotionProduct(name)) {
+            throw new CustomException(ExceptionMessage.ERROR_MESSAGE_PRODUCT_ALREADY_HAVE_PROMOTION);
+        }
+        if (!productIndex.containsKey(name)) {
+            Product generalProduct = new Product(name, 0, price, NULL_PROMOTION);
+            addNewProduct(name, generalProduct);
+        }
+        promotionProducts.add(product);
+        promotionProductIndex.put(name, promotionProducts.size() - 1);
+    }
+
+    public void addProduct(String name, int quantity, int price, String promotion) {
         if (promotion.equals(NULL_PROMOTION)) {
-            productIndex.put(name, products.size());
-            products.add(product);
+            handleGeneralProductAdd(name, quantity, price, promotion);
             return;
         }
         if (!promotionInventory.hasPromotion(promotion)) {
             throw new CustomException(ExceptionMessage.ERROR_MESSAGE_CANNOT_FIND_PROMOTION);
         }
-        promotionProductIndex.put(name, promotionProductIndex.size());
-        promotionProducts.add(product);
+        handlePromotionProductAdd(name, quantity, price, promotion);
     }
 
     public boolean hasProduct(String productName) {
@@ -104,5 +141,47 @@ public class ProductInventory {
     public Product findPromotionProduct(String productName) {
         int index = promotionProductIndex.get(productName);
         return promotionProducts.get(index);
+    }
+
+    public void outTotalProduct(String productName, int totalQuantity) {
+        if (hasPromotionProduct(productName)) {
+            Product promotionProduct = findPromotionProduct(productName);
+            Promotion promotion = promotionInventory.findPromotion(promotionProduct.getPromotion());
+            if (promotion.isPromotionNow()) {
+                int remainQuantity = outPromotionProduct(productName, totalQuantity);
+                outProduct(productName, remainQuantity);
+                return;
+            }
+        }
+        int remainQuantity = outProduct(productName, totalQuantity);
+        outPromotionProduct(productName, remainQuantity);
+    }
+
+    public int outProduct(String productName, int totalQuantity) {
+        Product product = findProduct(productName);
+        int currentProductQuantity = product.getQuantity();
+        if (currentProductQuantity == 0) {
+            return totalQuantity;
+        }
+        if (currentProductQuantity < totalQuantity) {
+            product.subStock(currentProductQuantity);
+            return totalQuantity - currentProductQuantity;
+        }
+        product.subStock(totalQuantity);
+        return 0;
+    }
+
+    public int outPromotionProduct(String productName, int totalQuantity) {
+        if (!hasPromotionProduct(productName)) {
+            return totalQuantity;
+        }
+        Product promotionProduct = findPromotionProduct(productName);
+        int currentPromotionProductQuantity = promotionProduct.getQuantity();
+        if (currentPromotionProductQuantity - totalQuantity < 0) {
+            promotionProduct.subStock(currentPromotionProductQuantity);
+            return totalQuantity - currentPromotionProductQuantity;
+        }
+        promotionProduct.subStock(totalQuantity);
+        return 0;
     }
 }
