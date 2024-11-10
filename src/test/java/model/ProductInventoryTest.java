@@ -7,12 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import error.ExceptionMessage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class ProductInventoryTest {
+    private static ProductInventory productInventory;
 
-    private final ProductInventory productInventory = new ProductInventory();
+    @BeforeEach
+    void setUp() {
+        PromotionInventory promotionInventory = new PromotionInventory();
+        productInventory = new ProductInventory(promotionInventory);
+    }
 
     @Test
     @DisplayName("상품 인벤토리에 새로운 프로모션 상품 정보를 추가하는 테스트입니다. ")
@@ -24,7 +30,7 @@ public class ProductInventoryTest {
 
         productInventory.addProduct(productName, quantity, price, promotion);
 
-        assertFalse(productInventory.hasProduct(productName));
+        assertTrue(productInventory.hasProduct(productName));
         assertTrue(productInventory.hasPromotionProduct(productName));
     }
 
@@ -136,4 +142,48 @@ public class ProductInventoryTest {
         assertEquals(quantity, promotionProductQuantity);
     }
 
+    @Test
+    @DisplayName("일반 상품의 재고를 올바르게 차감하는 테스트입니다.")
+    public void 상품_재고_차감_테스트() {
+        String productName = "제로제로콜라";
+        int initialQuantity = 50;
+        int subtractQuantity = 20;
+
+        productInventory.addProduct(productName, initialQuantity, 1000, "null");
+        int remainingQuantity = productInventory.outProduct(productName, subtractQuantity);
+
+        assertEquals(remainingQuantity, 0);
+        assertEquals(productInventory.getProductQuantity(productName), initialQuantity - subtractQuantity);
+    }
+
+    @Test
+    @DisplayName("프로모션 상품의 재고를 올바르게 차감하는 테스트입니다.")
+    public void 프로모션_상품_재고_차감_테스트() {
+        String productName = "환타";
+        int initialQuantity = 30;
+        int subtractQuantity = 10;
+
+        productInventory.addProduct(productName, initialQuantity, 1200, "탄산2+1");
+        int remainingQuantity = productInventory.outPromotionProduct(productName, subtractQuantity);
+
+        assertEquals(remainingQuantity, 0);
+        assertEquals(productInventory.getPromotionProductQuantity(productName), initialQuantity - subtractQuantity);
+    }
+
+    @Test
+    @DisplayName("상품의 일반 재고와 프로모션 재고를 함께 차감하는 테스트입니다.")
+    public void 총_재고_차감_테스트() {
+        String productName = "제로제로콜라";
+        int generalStockQuantity = 40;
+        int promotionStockQuantity = 20;
+        int totalSubtractQuantity = 45;
+
+        productInventory.addProduct(productName, generalStockQuantity, 1100, "null");
+        productInventory.addProduct(productName, promotionStockQuantity, 1100, "탄산2+1");
+
+        productInventory.outTotalProduct(productName, totalSubtractQuantity);
+
+        assertEquals(productInventory.getProductQuantity(productName), 15);
+        assertEquals(productInventory.getPromotionProductQuantity(productName), 0);
+    }
 }
