@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import dto.ProductInfoDto;
 import error.ExceptionMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +29,8 @@ public class ProductInventoryTest {
         int price = 1500;
         String promotion = "탄산2+1";
 
-        productInventory.addProduct(productName, quantity, price, promotion);
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, quantity, price, promotion);
+        productInventory.addProduct(productInfoDto);
 
         assertTrue(productInventory.hasProduct(productName));
         assertTrue(productInventory.hasPromotionProduct(productName));
@@ -42,7 +44,8 @@ public class ProductInventoryTest {
         int price = 1000;
         String promotion = "null";
 
-        productInventory.addProduct(productName, quantity, price, promotion);
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, quantity, price, promotion);
+        productInventory.addProduct(productInfoDto);
 
         assertTrue(productInventory.hasProduct(productName));
         assertFalse(productInventory.hasPromotionProduct(productName));
@@ -55,8 +58,9 @@ public class ProductInventoryTest {
         int quantity = 50;
         int price = 2500;
         String promotion = "존재하지 않는 프로모션";
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, quantity, price, promotion);
 
-        assertThatThrownBy(() -> productInventory.addProduct(productName, quantity, price, promotion))
+        assertThatThrownBy(() -> productInventory.addProduct(productInfoDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(ExceptionMessage.ERROR_MESSAGE_CANNOT_FIND_PROMOTION.toString());
     }
@@ -83,9 +87,11 @@ public class ProductInventoryTest {
     @DisplayName("상품과 구매 수량을 통해 구매 가능 여부를 확인하는 테스트입니다. ")
     public void 구매_가능_여부_테스트() {
         String productName = "환타";
-        int requestedQuantity = 5;
 
-        productInventory.addProduct(productName, 10, 1500, "null");
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, 10, 1500, "null");
+        productInventory.addProduct(productInfoDto);
+
+        int requestedQuantity = 5;
 
         assertDoesNotThrow(() -> productInventory.isCanBuyProduct(productName, requestedQuantity));
     }
@@ -94,10 +100,11 @@ public class ProductInventoryTest {
     @DisplayName("상품과 구매 수량을 통해, 구매 수량이 판매재고보다 많으면 예외를 발생시키는 테스트입니다. ")
     public void 구매_가능_여부_예외_테스트() {
         String productName = "환타";
+
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, 10, 1500, "null");
+        productInventory.addProduct(productInfoDto);
+
         int requestedQuantity = 200;
-
-        productInventory.addProduct(productName, 10, 1500, "null");
-
         assertThatThrownBy(() -> productInventory.isCanBuyProduct(productName, requestedQuantity))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_PURCHASE_INFO_IS_OUT_OF_STOCK.toString());
@@ -111,8 +118,12 @@ public class ProductInventoryTest {
         int stockQuantity = 100;
         int promotionProductQuantity = 50;
 
-        productInventory.addProduct(productName, stockQuantity, 1500, "null");
-        productInventory.addProduct(productName, promotionProductQuantity, 1500, "탄산2+1");
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, stockQuantity, 1500, "null");
+        ProductInfoDto promotionProductInfoDto = new ProductInfoDto(productName, promotionProductQuantity, 1500,
+                "탄산2+1");
+
+        productInventory.addProduct(productInfoDto);
+        productInventory.addProduct(promotionProductInfoDto);
 
         int totalCount = productInventory.getTotalProductCount(productName);
         assertEquals(stockQuantity + promotionProductQuantity, totalCount);
@@ -124,7 +135,8 @@ public class ProductInventoryTest {
         String productName = "제로제로콜라";
         int quantity = 100;
 
-        productInventory.addProduct(productName, quantity, 1000, "null");
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, quantity, 1000, "null");
+        productInventory.addProduct(productInfoDto);
 
         int productQuantity = productInventory.getProductQuantity(productName);
         assertEquals(quantity, productQuantity);
@@ -136,7 +148,8 @@ public class ProductInventoryTest {
         String productName = "제로제로콜라";
         int quantity = 50;
 
-        productInventory.addProduct(productName, quantity, 2000, "탄산2+1");
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, quantity, 2000, "탄산2+1");
+        productInventory.addProduct(productInfoDto);
 
         int promotionProductQuantity = productInventory.getPromotionProductQuantity(productName);
         assertEquals(quantity, promotionProductQuantity);
@@ -149,7 +162,9 @@ public class ProductInventoryTest {
         int initialQuantity = 50;
         int subtractQuantity = 20;
 
-        productInventory.addProduct(productName, initialQuantity, 1000, "null");
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, initialQuantity, 1000, "null");
+        productInventory.addProduct(productInfoDto);
+
         int remainingQuantity = productInventory.outProduct(productName, subtractQuantity);
 
         assertEquals(remainingQuantity, 0);
@@ -163,7 +178,8 @@ public class ProductInventoryTest {
         int initialQuantity = 30;
         int subtractQuantity = 10;
 
-        productInventory.addProduct(productName, initialQuantity, 1200, "탄산2+1");
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, initialQuantity, 1200, "탄산2+1");
+        productInventory.addProduct(productInfoDto);
         int remainingQuantity = productInventory.outPromotionProduct(productName, subtractQuantity);
 
         assertEquals(remainingQuantity, 0);
@@ -178,11 +194,13 @@ public class ProductInventoryTest {
         int promotionStockQuantity = 20;
         int totalSubtractQuantity = 45;
 
-        productInventory.addProduct(productName, generalStockQuantity, 1100, "null");
-        productInventory.addProduct(productName, promotionStockQuantity, 1100, "탄산2+1");
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, generalStockQuantity, 1100, "null");
+        ProductInfoDto promotionProductInfoDto = new ProductInfoDto(productName, promotionStockQuantity, 1100,
+                "탄산2+1");
 
+        productInventory.addProduct(productInfoDto);
+        productInventory.addProduct(promotionProductInfoDto);
         productInventory.outTotalProduct(productName, totalSubtractQuantity);
-
         assertEquals(productInventory.getProductQuantity(productName), 15);
         assertEquals(productInventory.getPromotionProductQuantity(productName), 0);
     }

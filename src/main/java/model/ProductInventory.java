@@ -1,6 +1,7 @@
 package model;
 
 import Util.FileReaderUtil;
+import dto.ProductInfoDto;
 import error.CustomException;
 import error.ExceptionMessage;
 import java.util.ArrayList;
@@ -26,9 +27,9 @@ public class ProductInventory {
         for (Product product : products) {
             if (hasPromotionProduct(product.getName())) {
                 Product promotionProduct = findPromotionProduct(product.getName());
-                totalProductStockInfo.add(promotionProduct.getProductStockInfo());
+                totalProductStockInfo.add(promotionProduct.makeProductStockInfoMessage());
             }
-            totalProductStockInfo.add(product.getProductStockInfo());
+            totalProductStockInfo.add(product.makeProductStockInfoMessage());
         }
         return totalProductStockInfo;
     }
@@ -39,7 +40,9 @@ public class ProductInventory {
         int quantity = Integer.parseInt(
                 productInfo.get(ProductInfoLineStructure.PRODUCT_QUANTITIES.ordinal()));
         String promotion = productInfo.get(ProductInfoLineStructure.PRODUCT_PROMOTION.ordinal());
-        addProduct(name, quantity, price, promotion);
+
+        ProductInfoDto productInfoDto = new ProductInfoDto(name, quantity, price, promotion);
+        addProduct(productInfoDto);
     }
 
     public void setProductInventory() {
@@ -51,14 +54,15 @@ public class ProductInventory {
         }
     }
 
-    public void handleGeneralProductAdd(String name, int quantity, int price, String promotion) {
-        Product product = new Product(name, quantity, price, promotion);
-        if (productIndex.containsKey(name)) {
-            Product findProduct = findProduct(name);
-            findProduct.addStock(quantity);
+    public void handleGeneralProductAdd(ProductInfoDto productInfoDto) {
+        Product product = productInfoDto.generateProduct();
+        String productName = productInfoDto.getName();
+        if (productIndex.containsKey(productName)) {
+            Product findProduct = findProduct(productName);
+            findProduct.addStock(productInfoDto.getQuantity());
             return;
         }
-        addNewProduct(name, product);
+        addNewProduct(productName, product);
     }
 
     public void addNewProduct(String name, Product product) {
@@ -66,28 +70,30 @@ public class ProductInventory {
         productIndex.put(name, products.size() - 1);
     }
 
-    public void handlePromotionProductAdd(String name, int quantity, int price, String promotion) {
-        Product product = new Product(name, quantity, price, promotion);
-        if (hasPromotionProduct(name)) {
+    public void handlePromotionProductAdd(ProductInfoDto productInfoDto) {
+        Product promotionProduct = productInfoDto.generateProduct();
+        String productName = productInfoDto.getName();
+        if (hasPromotionProduct(productName)) {
             throw new CustomException(ExceptionMessage.ERROR_MESSAGE_PRODUCT_ALREADY_HAVE_PROMOTION);
         }
-        if (!productIndex.containsKey(name)) {
-            Product generalProduct = new Product(name, 0, price, NULL_PROMOTION);
-            addNewProduct(name, generalProduct);
+        if (!productIndex.containsKey(productName)) {
+            Product generalProduct = new Product(productName, 0, productInfoDto.getPrice(), NULL_PROMOTION);
+            addNewProduct(productName, generalProduct);
         }
-        promotionProducts.add(product);
-        promotionProductIndex.put(name, promotionProducts.size() - 1);
+        promotionProducts.add(promotionProduct);
+        promotionProductIndex.put(productName, promotionProducts.size() - 1);
     }
 
-    public void addProduct(String name, int quantity, int price, String promotion) {
+    public void addProduct(ProductInfoDto productInfoDto) {
+        String promotion = productInfoDto.getPromotion();
         if (promotion.equals(NULL_PROMOTION)) {
-            handleGeneralProductAdd(name, quantity, price, promotion);
+            handleGeneralProductAdd(productInfoDto);
             return;
         }
         if (!promotionInventory.hasPromotion(promotion)) {
             throw new CustomException(ExceptionMessage.ERROR_MESSAGE_CANNOT_FIND_PROMOTION);
         }
-        handlePromotionProductAdd(name, quantity, price, promotion);
+        handlePromotionProductAdd(productInfoDto);
     }
 
     public boolean hasProduct(String productName) {
@@ -99,7 +105,7 @@ public class ProductInventory {
     }
 
     public void isProductExist(String productName) {
-        if (!hasProduct(productName) && !hasPromotionProduct(productName)) {
+        if (!hasProduct(productName)) {
             throw new CustomException(ExceptionMessage.ERROR_MESSAGE_INPUT_PURCHASE_INFO_NOT_EXIST_PRODUCT);
         }
     }
