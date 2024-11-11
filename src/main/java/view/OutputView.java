@@ -27,7 +27,6 @@ public class OutputView {
         for (String stock : currentInventoryStock) {
             printMessage(stock);
         }
-        printLineBreak();
     }
 
     public void printTotalProductInfo(List<TotalProductInfoDto> totalProductInfo) {
