@@ -4,6 +4,7 @@ import camp.nextstep.edu.missionutils.Console;
 import error.CustomException;
 import error.ExceptionMessage;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import model.ProductInventory;
 
@@ -37,7 +38,7 @@ public class InputView {
         return inputValue;
     }
 
-    public HashMap<String, Integer> readPurchaseInfo(String guideMessage) {
+    public LinkedHashMap<String, Integer> readPurchaseInfo(String guideMessage) {
         while (true) {
             try {
                 String inputPurchaseInfo = readInput(guideMessage);
@@ -56,9 +57,9 @@ public class InputView {
         }
     }
 
-    public HashMap<String, Integer> extractPurchaseInfoToMap(String inputPurchaseInfo) {
+    public LinkedHashMap<String, Integer> extractPurchaseInfoToMap(String inputPurchaseInfo) {
         List<String> inputPurchases = delimiterInputPurchaseInfo(inputPurchaseInfo);
-        HashMap<String, Integer> inputPurchaseInfoMap = new HashMap<>();
+        LinkedHashMap<String, Integer> inputPurchaseInfoMap = new LinkedHashMap<>();
         for (String inputPurchase : inputPurchases) {
             String productName = extractPurchaseName(inputPurchase);
             int productQuantity =
@@ -92,10 +93,12 @@ public class InputView {
     public boolean readYesOrNoInfo(String guideMessage) {
         while (true) {
             try {
+                outputView.printLineBreak();
                 String inputYesOrNoInfo = readInput(guideMessage);
                 inputYesOrNoInfo = validateInputNotEmpty(inputYesOrNoInfo);
                 return validateInputYesOrNoInfo(inputYesOrNoInfo);
             } catch (IllegalArgumentException e) {
+                outputView.printLineBreak();
                 outputView.printMessage(e.getMessage());
             }
         }
