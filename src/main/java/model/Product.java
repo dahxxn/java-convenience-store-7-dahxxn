@@ -3,11 +3,11 @@ package model;
 import constant.FileMetadata;
 
 public class Product {
+    static final String NULL_PROMOTION = FileMetadata.NULL_PROMOTION.toString();
     private final String name;
     private int quantity;
     private final int price;
     private final String promotion;
-    static final String NULL_PROMOTION = FileMetadata.NULL_PROMOTION.toString();
 
     public Product(String name, int quantity, int price, String promotion) {
         this.name = name;

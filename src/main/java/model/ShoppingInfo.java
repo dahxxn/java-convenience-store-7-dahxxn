@@ -10,15 +10,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ShoppingInfo {
+    private static final int MAX_MEMBERSHIP_DISCOUNT = PriceMetadata.MAX_MEMBERSHIP_DISCOUNT_PRICE.getValue();
+    private static final double MEMBERSHIP_DISCOUNT_PERCENTS =
+            (double) PriceMetadata.MEMBERSHIP_DISCOUNT_PERCENTS.getValue() / 100;
     private final LinkedHashMap<String, Integer> product;
     private final LinkedHashMap<String, Integer> promotionProduct;
     private final HashMap<String, Integer> productPrice;
     private boolean isMemberShip;
     private final ProductInventory productInventory;
     private final PromotionInventory promotionInventory;
-    private static final double MEMBERSHIP_DISCOUNT_PERCENTIES =
-            PriceMetadata.MEMBERSHIP_DISCOUNT_PERCENTS.getValue() / 100;
-    private static final int MAX_MEMBERSHIP_DISCOUNT = PriceMetadata.MAX_MEMBERSHIP_DISCOUNT_PRICE.getValue();
 
     public ShoppingInfo(ProductInventory productInventory, PromotionInventory promotionInventory) {
         this.product = new LinkedHashMap<>();
@@ -117,7 +117,7 @@ public class ShoppingInfo {
     public int calculateMemberShipDiscountPrice() {
         if (isMemberShip) {
             int notPromotionCost = calculateNonPromotionPrice();
-            int membershipDiscount = (int) (notPromotionCost * MEMBERSHIP_DISCOUNT_PERCENTIES);
+            int membershipDiscount = (int) (notPromotionCost * MEMBERSHIP_DISCOUNT_PERCENTS);
             if (membershipDiscount > MAX_MEMBERSHIP_DISCOUNT) {
                 return MAX_MEMBERSHIP_DISCOUNT;
             }

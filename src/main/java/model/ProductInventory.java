@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ProductInventory {
+    private static final String PRODUCT_MD_FILE_PATH = FileMetadata.PRODUCT_MD_FILE_PATH.toString();
+    private static final String NULL_PROMOTION = FileMetadata.NULL_PROMOTION.toString();
     private final List<Product> products = new ArrayList<>();
     private final List<Product> promotionProducts = new ArrayList<>();
     private final HashMap<String, Integer> promotionProductIndex = new HashMap<>();
     private final HashMap<String, Integer> productIndex = new HashMap<>();
-    static final String PRODUCT_MD_FILE_PATH = FileMetadata.PRODUCT_MD_FILE_PATH.toString();
-    static final String NULL_PROMOTION = FileMetadata.NULL_PROMOTION.toString();
-    PromotionInventory promotionInventory;
+    private final PromotionInventory promotionInventory;
 
     public ProductInventory(PromotionInventory promotionInventory) {
         this.promotionInventory = promotionInventory;

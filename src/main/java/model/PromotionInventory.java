@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PromotionInventory {
-    private final List<Promotion> promotions;
     private static HashMap<String, Integer> promotionIndex;
-    static final String PROMOTION_MD_FILE_PATH = FileMetadata.PROMOTION_MD_FILE_PATH.toString();
+    private static final String PROMOTION_MD_FILE_PATH = FileMetadata.PROMOTION_MD_FILE_PATH.toString();
+    private final List<Promotion> promotions;
 
     public PromotionInventory() {
         promotions = new ArrayList<>();
