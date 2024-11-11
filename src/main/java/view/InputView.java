@@ -1,6 +1,8 @@
 package view;
 
 import camp.nextstep.edu.missionutils.Console;
+import constant.FileMetadata;
+import constant.PurchaseValidation;
 import error.CustomException;
 import error.ExceptionMessage;
 import java.util.HashMap;
@@ -9,11 +11,11 @@ import java.util.List;
 import model.ProductInventory;
 
 public class InputView {
-    private static final String SINGLE_PURCHASE_INFO_REGEX = "^\\[([a-zA-Z가-힣]+)-([1-9][0-9]*)\\]$";
-    private static final String MULTIPLE_PURCHASE_INFO_REGEX = "^\\[([a-zA-Z가-힣]+)-([1-9][0-9]*)\\](,\\[([a-zA-Z가-힣]+)-([1-9][0-9]*)\\])*$";
-    private static final String PURCHASE_INFO_DELIMITER = ",";
-    private static final String YES = "Y";
-    private static final String NO = "N";
+    private static final String SINGLE_PURCHASE_INFO_REGEX = PurchaseValidation.SINGLE_PURCHASE_INFO_REGEX.toString();
+    private static final String MULTIPLE_PURCHASE_INFO_REGEX = PurchaseValidation.MULTIPLE_PURCHASE_INFO_REGEX.toString();
+    private static final String PURCHASE_INFO_DELIMITER = FileMetadata.DELIMITER.toString();
+    private static final String YES = PurchaseValidation.YES.toString();
+    private static final String NO = PurchaseValidation.NO.toString();
 
     OutputView outputView = new OutputView();
     ProductInventory productInventory;
@@ -41,6 +43,7 @@ public class InputView {
     public LinkedHashMap<String, Integer> readPurchaseInfo(String guideMessage) {
         while (true) {
             try {
+                outputView.printLineBreak();
                 String inputPurchaseInfo = readInput(guideMessage);
                 inputPurchaseInfo = validateInputNotEmpty(inputPurchaseInfo);
                 validateInputPurchaseInfoFormat(inputPurchaseInfo);
@@ -53,7 +56,7 @@ public class InputView {
 
     public void validateInputPurchaseInfoFormat(String inputPurchaseInfo) {
         if (!inputPurchaseInfo.matches(MULTIPLE_PURCHASE_INFO_REGEX)) {
-            throw new CustomException(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG);
+            throw new CustomException(ExceptionMessage.ERROR_MESSAGE_INPUT_PURCHASE_INFO_IS_NOT_VALID);
         }
     }
 
