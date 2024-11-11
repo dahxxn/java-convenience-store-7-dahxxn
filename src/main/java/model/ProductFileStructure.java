@@ -1,6 +1,6 @@
 package model;
 
-public enum ProductInfoLineStructure {
+public enum ProductFileStructure {
     PRODUCT_NAME(1),
     PRODUCT_PRICE(2),
     PRODUCT_QUANTITIES(3),
@@ -8,7 +8,7 @@ public enum ProductInfoLineStructure {
 
     private final int index;
 
-    ProductInfoLineStructure(int index) {
+    ProductFileStructure(int index) {
         this.index = index;
     }
 }

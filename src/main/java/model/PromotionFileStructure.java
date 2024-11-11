@@ -1,6 +1,6 @@
 package model;
 
-public enum PromotionInfoLineStructure {
+public enum PromotionFileStructure {
     PROMOTION_NAME(1),
     PROMOTION_BUY_COUNT(2),
     PROMOTION_GET_COUNT(3),
@@ -9,7 +9,7 @@ public enum PromotionInfoLineStructure {
 
     private final int index;
 
-    PromotionInfoLineStructure(int index) {
+    PromotionFileStructure(int index) {
         this.index = index;
     }
 }
