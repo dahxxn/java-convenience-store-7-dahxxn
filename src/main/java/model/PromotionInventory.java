@@ -1,6 +1,7 @@
 package model;
 
 import Util.FileReaderUtil;
+import constant.FileMetadata;
 import dto.PromotionInfoDto;
 import error.CustomException;
 import error.ExceptionMessage;
@@ -14,7 +15,7 @@ import java.util.List;
 public class PromotionInventory {
     private final List<Promotion> promotions;
     private static HashMap<String, Integer> promotionIndex;
-    static final String PROMOTION_MD_FILE_PATH = "src/main/resources/promotions.md";
+    static final String PROMOTION_MD_FILE_PATH = FileMetadata.PROMOTION_MD_FILE_PATH.toString();
 
     public PromotionInventory() {
         promotions = new ArrayList<>();
@@ -28,13 +29,13 @@ public class PromotionInventory {
     }
 
     public void setPromotionInfo(List<String> promotionInfo) {
-        String name = promotionInfo.get(PromotionInfoLineStructure.PROMOTION_NAME.ordinal());
-        int buyCount = Integer.parseInt(promotionInfo.get(PromotionInfoLineStructure.PROMOTION_BUY_COUNT.ordinal()));
-        int getCount = Integer.parseInt(promotionInfo.get(PromotionInfoLineStructure.PROMOTION_GET_COUNT.ordinal()));
+        String name = promotionInfo.get(PromotionFileStructure.PROMOTION_NAME.ordinal());
+        int buyCount = Integer.parseInt(promotionInfo.get(PromotionFileStructure.PROMOTION_BUY_COUNT.ordinal()));
+        int getCount = Integer.parseInt(promotionInfo.get(PromotionFileStructure.PROMOTION_GET_COUNT.ordinal()));
         LocalDateTime startAt = convertStringToLocalDateTime(
-                promotionInfo.get(PromotionInfoLineStructure.PROMOTION_START_AT.ordinal()));
+                promotionInfo.get(PromotionFileStructure.PROMOTION_START_AT.ordinal()));
         LocalDateTime endAt = convertStringToLocalDateTime(
-                promotionInfo.get(PromotionInfoLineStructure.PROMOTION_END_AT.ordinal()));
+                promotionInfo.get(PromotionFileStructure.PROMOTION_END_AT.ordinal()));
         PromotionInfoDto promotionInfoDto = new PromotionInfoDto(name, buyCount, getCount, startAt, endAt);
         addPromotion(promotionInfoDto);
     }

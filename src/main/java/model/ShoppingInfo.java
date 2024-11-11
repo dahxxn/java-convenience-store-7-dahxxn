@@ -1,5 +1,6 @@
 package model;
 
+import constant.PriceMetadata;
 import dto.TotalCostInfoDto;
 import dto.TotalProductInfoDto;
 import dto.TotalPromotionInfoDto;
@@ -15,8 +16,9 @@ public class ShoppingInfo {
     private boolean isMemberShip;
     private final ProductInventory productInventory;
     private final PromotionInventory promotionInventory;
-    private static double MEMBERSHIP_DISCOUNT_PERCENTIES = 0.3;
-    private static int MAX_MEMBERSHIP_DISCOUNT = 8000;
+    private static final double MEMBERSHIP_DISCOUNT_PERCENTIES =
+            PriceMetadata.MEMBERSHIP_DISCOUNT_PERCENTS.getValue() / 100;
+    private static final int MAX_MEMBERSHIP_DISCOUNT = PriceMetadata.MAX_MEMBERSHIP_DISCOUNT_PRICE.getValue();
 
     public ShoppingInfo(ProductInventory productInventory, PromotionInventory promotionInventory) {
         this.product = new LinkedHashMap<>();
@@ -50,9 +52,6 @@ public class ShoppingInfo {
     public void subProductQuantity(String productName, int productQuantity) {
         int updateQuantity = product.get(productName) - productQuantity;
         product.put(productName, updateQuantity);
-        if (updateQuantity == 0) {
-            product.remove(productName);
-        }
     }
 
     public void addPromotionProductQuantity(String productName, int productQuantity) {

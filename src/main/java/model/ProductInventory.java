@@ -1,6 +1,7 @@
 package model;
 
 import Util.FileReaderUtil;
+import constant.FileMetadata;
 import dto.ProductInfoDto;
 import error.CustomException;
 import error.ExceptionMessage;
@@ -13,8 +14,8 @@ public class ProductInventory {
     private final List<Product> promotionProducts = new ArrayList<>();
     private final HashMap<String, Integer> promotionProductIndex = new HashMap<>();
     private final HashMap<String, Integer> productIndex = new HashMap<>();
-    static final String PRODUCT_MD_FILE_PATH = "src/main/resources/products.md";
-    static final String NULL_PROMOTION = "null";
+    static final String PRODUCT_MD_FILE_PATH = FileMetadata.PRODUCT_MD_FILE_PATH.toString();
+    static final String NULL_PROMOTION = FileMetadata.NULL_PROMOTION.toString();
     PromotionInventory promotionInventory;
 
     public ProductInventory(PromotionInventory promotionInventory) {
@@ -35,11 +36,11 @@ public class ProductInventory {
     }
 
     public void setProductInfo(List<String> productInfo) {
-        String name = productInfo.get(ProductInfoLineStructure.PRODUCT_NAME.ordinal());
-        int price = Integer.parseInt(productInfo.get(ProductInfoLineStructure.PRODUCT_PRICE.ordinal()));
+        String name = productInfo.get(ProductFileStructure.PRODUCT_NAME.ordinal());
+        int price = Integer.parseInt(productInfo.get(ProductFileStructure.PRODUCT_PRICE.ordinal()));
         int quantity = Integer.parseInt(
-                productInfo.get(ProductInfoLineStructure.PRODUCT_QUANTITIES.ordinal()));
-        String promotion = productInfo.get(ProductInfoLineStructure.PRODUCT_PROMOTION.ordinal());
+                productInfo.get(ProductFileStructure.PRODUCT_QUANTITIES.ordinal()));
+        String promotion = productInfo.get(ProductFileStructure.PRODUCT_PROMOTION.ordinal());
 
         ProductInfoDto productInfoDto = new ProductInfoDto(name, quantity, price, promotion);
         addProduct(productInfoDto);
