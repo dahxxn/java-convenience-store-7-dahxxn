@@ -29,20 +29,18 @@ public class PromotionInventory {
     }
 
     public void setPromotionInfo(List<String> promotionInfo) {
-        String name = promotionInfo.get(PromotionFileStructure.PROMOTION_NAME.ordinal());
-        int buyCount = Integer.parseInt(promotionInfo.get(PromotionFileStructure.PROMOTION_BUY_COUNT.ordinal()));
-        int getCount = Integer.parseInt(promotionInfo.get(PromotionFileStructure.PROMOTION_GET_COUNT.ordinal()));
-        LocalDateTime startAt = convertStringToLocalDateTime(
-                promotionInfo.get(PromotionFileStructure.PROMOTION_START_AT.ordinal()));
-        LocalDateTime endAt = convertStringToLocalDateTime(
-                promotionInfo.get(PromotionFileStructure.PROMOTION_END_AT.ordinal()));
-        PromotionInfoDto promotionInfoDto = new PromotionInfoDto(name, buyCount, getCount, startAt, endAt);
+        PromotionInfoDto promotionInfoDto = new PromotionInfoDto(
+                promotionInfo.get(PromotionFileStructure.PROMOTION_NAME.ordinal()),
+                Integer.parseInt(promotionInfo.get(PromotionFileStructure.PROMOTION_BUY_COUNT.ordinal())),
+                Integer.parseInt(promotionInfo.get(PromotionFileStructure.PROMOTION_GET_COUNT.ordinal())),
+                convertStringToLocalDateTime(promotionInfo.get(PromotionFileStructure.PROMOTION_START_AT.ordinal())),
+                convertStringToLocalDateTime(promotionInfo.get(PromotionFileStructure.PROMOTION_END_AT.ordinal()))
+        );
         addPromotion(promotionInfoDto);
     }
 
     public void setPromotionInventory() {
         List<String> promotionInfoLines = FileReaderUtil.readFile(PROMOTION_MD_FILE_PATH);
-
         for (int i = 1; i < promotionInfoLines.size(); i++) {
             String promotionInfoLine = promotionInfoLines.get(i);
             List<String> promotionInfo = FileReaderUtil.delimiterLine(promotionInfoLine);

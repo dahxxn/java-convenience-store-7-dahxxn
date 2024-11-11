@@ -71,13 +71,16 @@ public class ShoppingInfo {
     public List<TotalProductInfoDto> getTotalProductInfo() {
         List<TotalProductInfoDto> totalProductInfoDtos = new ArrayList<>();
         for (String productName : this.product.keySet()) {
-            int productQuantity = this.product.get(productName);
-            int productPrice = this.productPrice.get(productName);
-            int totalPrice = productPrice * productQuantity;
-            TotalProductInfoDto totalProductInfoDto = new TotalProductInfoDto(productName, productQuantity, totalPrice);
-            totalProductInfoDtos.add(totalProductInfoDto);
+            totalProductInfoDtos.add(createTotalProductInfoDto(productName));
         }
         return totalProductInfoDtos;
+    }
+
+    private TotalProductInfoDto createTotalProductInfoDto(String productName) {
+        int productQuantity = this.product.get(productName);
+        int productPrice = this.productPrice.get(productName);
+        int totalPrice = productPrice * productQuantity;
+        return new TotalProductInfoDto(productName, productQuantity, totalPrice);
     }
 
     public List<TotalPromotionInfoDto> getTotalPromotionInfo() {
@@ -151,17 +154,27 @@ public class ShoppingInfo {
     }
 
     public int calculateNonPromotionPrice() {
-        int totalPromotionPrice = 0;
         int totalPrice = calculateTotalPrice();
-        for (String productName : this.promotionProduct.keySet()) {
-            Product product = productInventory.findPromotionProduct(productName);
-            String promotionName = product.getPromotion();
-            Promotion promotion = promotionInventory.findPromotion(promotionName);
-            int totalCount = promotion.getTotalCount();
-            totalPromotionPrice += (totalCount * this.promotionProduct.get(productName) * productPrice.get(
-                    productName));
-        }
+        int totalPromotionPrice = calculateAllPromotionPrice();
         return totalPrice - totalPromotionPrice;
+    }
+
+    public int calculateAllPromotionPrice() {
+        int totalPromotionPrice = 0;
+        for (String productName : this.promotionProduct.keySet()) {
+            totalPromotionPrice += calculateProductPromotionPrice(productName);
+        }
+        return totalPromotionPrice;
+    }
+
+    private int calculateProductPromotionPrice(String productName) {
+        Product product = productInventory.findPromotionProduct(productName);
+        int promotionQuantity = this.promotionProduct.get(productName);
+        int productPrice = this.productPrice.get(productName);
+
+        Promotion promotion = promotionInventory.findPromotion(product.getPromotion());
+        int totalCount = promotion.getTotalCount();
+        return totalCount * promotionQuantity * productPrice;
     }
 
     public void updateProductInventory() {

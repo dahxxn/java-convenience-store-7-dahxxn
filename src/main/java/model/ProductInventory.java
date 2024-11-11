@@ -41,7 +41,6 @@ public class ProductInventory {
         int quantity = Integer.parseInt(
                 productInfo.get(ProductFileStructure.PRODUCT_QUANTITIES.ordinal()));
         String promotion = productInfo.get(ProductFileStructure.PRODUCT_PROMOTION.ordinal());
-
         ProductInfoDto productInfoDto = new ProductInfoDto(name, quantity, price, promotion);
         addProduct(productInfoDto);
     }
@@ -72,17 +71,30 @@ public class ProductInventory {
     }
 
     public void handlePromotionProductAdd(ProductInfoDto productInfoDto) {
-        Product promotionProduct = productInfoDto.generateProduct();
         String productName = productInfoDto.getName();
+        checkIfPromotionAlreadyExists(productName);
+        addGeneralProductIfNotExists(productInfoDto);
+        addPromotionProduct(productInfoDto);
+    }
+
+    private void checkIfPromotionAlreadyExists(String productName) {
         if (hasPromotionProduct(productName)) {
             throw new CustomException(ExceptionMessage.ERROR_MESSAGE_PRODUCT_ALREADY_HAVE_PROMOTION);
         }
+    }
+
+    private void addGeneralProductIfNotExists(ProductInfoDto productInfoDto) {
+        String productName = productInfoDto.getName();
         if (!productIndex.containsKey(productName)) {
             Product generalProduct = new Product(productName, 0, productInfoDto.getPrice(), NULL_PROMOTION);
             addNewProduct(productName, generalProduct);
         }
+    }
+
+    private void addPromotionProduct(ProductInfoDto productInfoDto) {
+        Product promotionProduct = productInfoDto.generateProduct();
         promotionProducts.add(promotionProduct);
-        promotionProductIndex.put(productName, promotionProducts.size() - 1);
+        promotionProductIndex.put(productInfoDto.getName(), promotionProducts.size() - 1);
     }
 
     public void addProduct(ProductInfoDto productInfoDto) {
@@ -152,14 +164,22 @@ public class ProductInventory {
 
     public void outTotalProduct(String productName, int totalQuantity) {
         if (hasPromotionProduct(productName)) {
-            Product promotionProduct = findPromotionProduct(productName);
-            Promotion promotion = promotionInventory.findPromotion(promotionProduct.getPromotion());
-            if (promotion.isPromotionNow()) {
-                int remainQuantity = outPromotionProduct(productName, totalQuantity);
-                outProduct(productName, remainQuantity);
-                return;
-            }
+            handlePromotionProductOut(productName, totalQuantity);
+            return;
         }
+        handleGeneralProductOut(productName, totalQuantity);
+    }
+
+    private void handlePromotionProductOut(String productName, int totalQuantity) {
+        Product promotionProduct = findPromotionProduct(productName);
+        Promotion promotion = promotionInventory.findPromotion(promotionProduct.getPromotion());
+        if (promotion.isPromotionNow()) {
+            int remainQuantity = outPromotionProduct(productName, totalQuantity);
+            outProduct(productName, remainQuantity);
+        }
+    }
+
+    private void handleGeneralProductOut(String productName, int totalQuantity) {
         int remainQuantity = outProduct(productName, totalQuantity);
         outPromotionProduct(productName, remainQuantity);
     }
@@ -170,6 +190,10 @@ public class ProductInventory {
         if (currentProductQuantity == 0) {
             return totalQuantity;
         }
+        return subtractProductStock(product, totalQuantity, currentProductQuantity);
+    }
+
+    private int subtractProductStock(Product product, int totalQuantity, int currentProductQuantity) {
         if (currentProductQuantity < totalQuantity) {
             product.subStock(currentProductQuantity);
             return totalQuantity - currentProductQuantity;
@@ -184,6 +208,11 @@ public class ProductInventory {
         }
         Product promotionProduct = findPromotionProduct(productName);
         int currentPromotionProductQuantity = promotionProduct.getQuantity();
+        return subtractPromotionStock(promotionProduct, totalQuantity, currentPromotionProductQuantity);
+    }
+
+    private int subtractPromotionStock(Product promotionProduct, int totalQuantity,
+                                       int currentPromotionProductQuantity) {
         if (currentPromotionProductQuantity - totalQuantity < 0) {
             promotionProduct.subStock(currentPromotionProductQuantity);
             return totalQuantity - currentPromotionProductQuantity;

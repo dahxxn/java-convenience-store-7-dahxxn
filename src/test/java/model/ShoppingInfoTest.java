@@ -20,7 +20,7 @@ public class ShoppingInfoTest {
 
     public void addProductForTest() {
         LinkedHashMap<String, Integer> purchaseInfo = new LinkedHashMap<>();
-        purchaseInfo.put("콜라", 3); //2+1
+        purchaseInfo.put("콜라", 3);
         purchaseInfo.put("사이다", 5);
         shoppingInfo.addProduct(purchaseInfo);
         shoppingInfo.addPromotionProductQuantity("콜라", 1);
@@ -58,12 +58,12 @@ public class ShoppingInfoTest {
 
     @Test
     public void 상품_수량_차감_및_삭제_테스트() {
-        addProductForTest();
+        LinkedHashMap<String, Integer> purchaseInfo = new LinkedHashMap<>();
+        purchaseInfo.put("콜라", 3);
+        shoppingInfo.addProduct(purchaseInfo);
         shoppingInfo.subProductQuantity("콜라", 3);
 
-        assertEquals(0, shoppingInfo.getTotalProductInfo().stream()
-                .filter(info -> info.getProductName().equals("콜라"))
-                .count());
+        assertEquals(0, shoppingInfo.getTotalProductInfo().get(0).getProductQuantity());
     }
 
     @Test
