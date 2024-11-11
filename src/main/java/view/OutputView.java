@@ -17,6 +17,7 @@ public class OutputView {
     }
 
     public void printWelcomeMessage() {
+        printLineBreak();
         printMessage(OutputMessage.WELCOME_MESSAGE.toString());
         printMessage(OutputMessage.CURRENT_INVENTORY_GUIDE_MESSAGE.toString());
         printLineBreak();
@@ -32,7 +33,6 @@ public class OutputView {
     public void printTotalProductInfo(List<TotalProductInfoDto> totalProductInfo) {
         printMessage(OutputMessage.RECEIPTS_START_LINE.toString());
         printMessage(OutputMessage.RECEIPTS_TOTAL_PRODUCT_SUBJECT.toString());
-
         for (TotalProductInfoDto productInfo : totalProductInfo) {
             String formattedProductInfo = OutputMessage.RECEIPTS_PRODUCT_INFO.formatMessage(
                     productInfo.getProductName(),
@@ -64,6 +64,7 @@ public class OutputView {
     }
 
     public void printReceipt(ReceiptInfoDto receiptInfo) {
+        printLineBreak();
         printTotalProductInfo(receiptInfo.totalProductInfo());
         printTotalPromotionProductInfo(receiptInfo.totalPromotionProductInfo());
         printTotalCostInfo(receiptInfo.totalCostInfo(), receiptInfo.promotionDiscount(),
