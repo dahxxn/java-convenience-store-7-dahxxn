@@ -84,7 +84,7 @@ public class InputViewTest {
     public void 상품_정보_입력_형식_검증_예외_테스트_상품이름에_숫자나_특수기호가_올때(String testInputPurchaseInfo) {
         assertThatThrownBy(() -> inputView.validateInputPurchaseInfoFormat(testInputPurchaseInfo))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString());
+                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_PURCHASE_INFO_IS_NOT_VALID.toString());
     }
 
     @ParameterizedTest
@@ -93,7 +93,7 @@ public class InputViewTest {
     public void 상품_정보_입력_형식_검증_예외_테스트_구매갯수에_숫자형식이_아닌_값이_올때(String testInputPurchaseInfo) {
         assertThatThrownBy(() -> inputView.validateInputPurchaseInfoFormat(testInputPurchaseInfo))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString());
+                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_PURCHASE_INFO_IS_NOT_VALID.toString());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class InputViewTest {
         String testInputPurchaseInfo = "[콜라-10],";
         assertThatThrownBy(() -> inputView.validateInputPurchaseInfoFormat(testInputPurchaseInfo))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString());
+                .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_PURCHASE_INFO_IS_NOT_VALID.toString());
     }
 
     @Test
