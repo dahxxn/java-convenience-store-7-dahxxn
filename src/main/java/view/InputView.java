@@ -45,13 +45,18 @@ public class InputView {
             try {
                 outputView.printLineBreak();
                 String inputPurchaseInfo = readInput(guideMessage);
-                inputPurchaseInfo = validateInputNotEmpty(inputPurchaseInfo);
-                validateInputPurchaseInfoFormat(inputPurchaseInfo);
+                inputPurchaseInfo = totalValidateInputPurchaseInfo(inputPurchaseInfo);
                 return extractPurchaseInfoToMap(inputPurchaseInfo);
             } catch (IllegalArgumentException e) {
                 outputView.printMessage(e.getMessage());
             }
         }
+    }
+
+    public String totalValidateInputPurchaseInfo(String inputPurchaseInfo) {
+        inputPurchaseInfo = validateInputNotEmpty(inputPurchaseInfo);
+        validateInputPurchaseInfoFormat(inputPurchaseInfo);
+        return inputPurchaseInfo;
     }
 
     public void validateInputPurchaseInfoFormat(String inputPurchaseInfo) {
@@ -65,13 +70,21 @@ public class InputView {
         LinkedHashMap<String, Integer> inputPurchaseInfoMap = new LinkedHashMap<>();
         for (String inputPurchase : inputPurchases) {
             String productName = extractPurchaseName(inputPurchase);
-            int productQuantity =
-                    extractQuantity(inputPurchase) + isDuplicatedProduct(productName, inputPurchaseInfoMap);
-            productInventory.isProductExist(productName);
-            productInventory.isCanBuyProduct(productName, productQuantity);
+            int productQuantity = calculateProductQuantity(inputPurchase, productName, inputPurchaseInfoMap);
+            checkIsPurchaseInfoValid(productName, productQuantity);
             inputPurchaseInfoMap.put(productName, productQuantity);
         }
         return inputPurchaseInfoMap;
+    }
+
+    public int calculateProductQuantity(String inputPurchase, String productName,
+                                        LinkedHashMap<String, Integer> inputPurchaseInfoMap) {
+        return extractQuantity(inputPurchase) + isDuplicatedProduct(productName, inputPurchaseInfoMap);
+    }
+
+    public void checkIsPurchaseInfoValid(String productName, int productQuantity) {
+        productInventory.isProductExist(productName);
+        productInventory.isCanBuyProduct(productName, productQuantity);
     }
 
     public int isDuplicatedProduct(String productName, HashMap<String, Integer> inputPurchaseInfoMap) {
@@ -98,13 +111,17 @@ public class InputView {
             try {
                 outputView.printLineBreak();
                 String inputYesOrNoInfo = readInput(guideMessage);
-                inputYesOrNoInfo = validateInputNotEmpty(inputYesOrNoInfo);
-                return validateInputYesOrNoInfo(inputYesOrNoInfo);
+                return totalValidateInputYesOrNoInfo(inputYesOrNoInfo);
             } catch (IllegalArgumentException e) {
                 outputView.printLineBreak();
                 outputView.printMessage(e.getMessage());
             }
         }
+    }
+
+    public boolean totalValidateInputYesOrNoInfo(String inputYesOrNoInfo) {
+        inputYesOrNoInfo = validateInputNotEmpty(inputYesOrNoInfo);
+        return validateInputYesOrNoInfo(inputYesOrNoInfo);
     }
 
     public boolean validateInputYesOrNoInfo(String inputYesOrNoInfo) {
