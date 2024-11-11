@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import dto.PromotionInfoDto;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,10 @@ public class PromotionTest {
     public void setUp() {
         LocalDate startAt = LocalDate.parse("2024-11-01", DateTimeFormatter.ISO_DATE);
         LocalDate endAt = LocalDate.parse("2024-11-30", DateTimeFormatter.ISO_DATE);
-        promotion = new Promotion("반짝할인", 1, 1, startAt.atStartOfDay(), endAt.atStartOfDay());
+        PromotionInfoDto promotionInfoDto = new PromotionInfoDto("반짝할인", 1, 1, startAt.atStartOfDay(),
+                endAt.atStartOfDay());
+
+        promotion = new Promotion(promotionInfoDto);
     }
 
     @Test

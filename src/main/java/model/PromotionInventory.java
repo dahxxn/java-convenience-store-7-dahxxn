@@ -1,6 +1,7 @@
 package model;
 
 import Util.FileReaderUtil;
+import dto.PromotionInfoDto;
 import error.CustomException;
 import error.ExceptionMessage;
 import java.time.LocalDate;
@@ -21,15 +22,21 @@ public class PromotionInventory {
         setPromotionInventory();
     }
 
+    public LocalDateTime convertStringToLocalDateTime(String dateInfo) {
+        LocalDate yearMonthDay = LocalDate.parse(dateInfo, DateTimeFormatter.ISO_DATE);
+        return yearMonthDay.atStartOfDay();
+    }
+
     public void setPromotionInfo(List<String> promotionInfo) {
         String name = promotionInfo.get(PromotionInfoLineStructure.PROMOTION_NAME.ordinal());
         int buyCount = Integer.parseInt(promotionInfo.get(PromotionInfoLineStructure.PROMOTION_BUY_COUNT.ordinal()));
         int getCount = Integer.parseInt(promotionInfo.get(PromotionInfoLineStructure.PROMOTION_GET_COUNT.ordinal()));
-        LocalDate startAt = LocalDate.parse(
-                promotionInfo.get(PromotionInfoLineStructure.PROMOTION_START_AT.ordinal()), DateTimeFormatter.ISO_DATE);
-        LocalDate endAt = LocalDate.parse(
-                promotionInfo.get(PromotionInfoLineStructure.PROMOTION_END_AT.ordinal()), DateTimeFormatter.ISO_DATE);
-        addPromotion(name, buyCount, getCount, startAt.atStartOfDay(), endAt.atStartOfDay());
+        LocalDateTime startAt = convertStringToLocalDateTime(
+                promotionInfo.get(PromotionInfoLineStructure.PROMOTION_START_AT.ordinal()));
+        LocalDateTime endAt = convertStringToLocalDateTime(
+                promotionInfo.get(PromotionInfoLineStructure.PROMOTION_END_AT.ordinal()));
+        PromotionInfoDto promotionInfoDto = new PromotionInfoDto(name, buyCount, getCount, startAt, endAt);
+        addPromotion(promotionInfoDto);
     }
 
     public void setPromotionInventory() {
@@ -42,12 +49,12 @@ public class PromotionInventory {
         }
     }
 
-    public void addPromotion(String promotionName, int buyCount, int getCount, LocalDateTime startAt,
-                             LocalDateTime endAt) {
+    public void addPromotion(PromotionInfoDto promotionInfoDto) {
+        String promotionName = promotionInfoDto.getName();
         if (hasPromotion(promotionName)) {
             throw new CustomException(ExceptionMessage.ERROR_MESSAGE_ALREADY_HAVE_PROMOTION);
         }
-        Promotion promotion = new Promotion(promotionName, buyCount, getCount, startAt, endAt);
+        Promotion promotion = new Promotion(promotionInfoDto);
         promotions.add(promotion);
         promotionIndex.put(promotionName, promotions.size() - 1);
     }

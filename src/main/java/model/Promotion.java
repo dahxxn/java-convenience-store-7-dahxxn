@@ -1,6 +1,7 @@
 package model;
 
 import camp.nextstep.edu.missionutils.DateTimes;
+import dto.PromotionInfoDto;
 import java.time.LocalDateTime;
 
 public class Promotion {
@@ -11,12 +12,12 @@ public class Promotion {
     private final LocalDateTime startAt;
     private final LocalDateTime endAt;
 
-    Promotion(String name, int buyCount, int getCount, LocalDateTime startAt, LocalDateTime endAt) {
-        this.name = name;
-        this.buyCount = buyCount;
-        this.getCount = getCount;
-        this.startAt = startAt;
-        this.endAt = endAt;
+    Promotion(PromotionInfoDto promotionInfoDto) {
+        this.name = promotionInfoDto.getName();
+        this.buyCount = promotionInfoDto.getBuyCount();
+        this.getCount = promotionInfoDto.getGetCount();
+        this.startAt = promotionInfoDto.getStartAt();
+        this.endAt = promotionInfoDto.getEndAt();
         this.totalCount = buyCount + getCount;
     }
 

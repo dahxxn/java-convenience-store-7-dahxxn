@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import dto.PromotionInfoDto;
 import error.ExceptionMessage;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +29,8 @@ public class PromotionInventoryTest {
         LocalDateTime startAt = LocalDateTime.of(2024, 11, 1, 0, 0);
         LocalDateTime endAt = LocalDateTime.of(2024, 11, 30, 0, 0);
 
-        promotionInventory.addPromotion(promotionName, buyCount, getCount, startAt, endAt);
+        PromotionInfoDto promotionInfoDto = new PromotionInfoDto(promotionName, buyCount, getCount, startAt, endAt);
+        promotionInventory.addPromotion(promotionInfoDto);
 
         assertTrue(promotionInventory.hasPromotion(promotionName));
     }
@@ -42,9 +44,10 @@ public class PromotionInventoryTest {
         LocalDateTime startAt = LocalDateTime.of(2024, 11, 1, 0, 0);
         LocalDateTime endAt = LocalDateTime.of(2024, 11, 30, 0, 0);
 
-        promotionInventory.addPromotion(promotionName, buyCount, getCount, startAt, endAt);
+        PromotionInfoDto promotionInfoDto = new PromotionInfoDto(promotionName, buyCount, getCount, startAt, endAt);
+        promotionInventory.addPromotion(promotionInfoDto);
 
-        assertThatThrownBy(() -> promotionInventory.addPromotion(promotionName, buyCount, getCount, startAt, endAt))
+        assertThatThrownBy(() -> promotionInventory.addPromotion(promotionInfoDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(ExceptionMessage.ERROR_MESSAGE_ALREADY_HAVE_PROMOTION.toString());
     }
@@ -57,8 +60,9 @@ public class PromotionInventoryTest {
         int getCount = 1;
         LocalDateTime startAt = LocalDateTime.of(2024, 11, 1, 0, 0);
         LocalDateTime endAt = LocalDateTime.of(2024, 11, 30, 0, 0);
-
-        promotionInventory.addPromotion(promotionName, buyCount, getCount, startAt, endAt);
+        
+        PromotionInfoDto promotionInfoDto = new PromotionInfoDto(promotionName, buyCount, getCount, startAt, endAt);
+        promotionInventory.addPromotion(promotionInfoDto);
 
         assertDoesNotThrow(() -> promotionInventory.findPromotion(promotionName));
     }
