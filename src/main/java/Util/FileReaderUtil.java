@@ -1,5 +1,6 @@
 package Util;
 
+import constant.FileMetadata;
 import error.CustomException;
 import error.ExceptionMessage;
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class FileReaderUtil {
-    public static String DELIMITER = ",";
+    public static String DELIMITER = FileMetadata.DELIMITER.toString();
 
     public static List<String> readFile(String filePath) {
         try {
