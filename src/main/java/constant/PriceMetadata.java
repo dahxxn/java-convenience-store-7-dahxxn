@@ -5,7 +5,7 @@ public enum PriceMetadata {
     MAX_MEMBERSHIP_DISCOUNT_PRICE(8000),
     ;
 
-    private int value;
+    private final int value;
 
     PriceMetadata(int value) {
         this.value = value;

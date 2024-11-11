@@ -6,7 +6,7 @@ public enum PurchaseValidation {
     YES("Y"),
     NO("N");
 
-    private String value;
+    private final String value;
 
     PurchaseValidation(String value) {
         this.value = value;

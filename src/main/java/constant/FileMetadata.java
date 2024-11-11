@@ -6,7 +6,7 @@ public enum FileMetadata {
     DELIMITER(","),
     NULL_PROMOTION("null");
 
-    private String value;
+    private final String value;
 
     FileMetadata(String value) {
         this.value = value;
