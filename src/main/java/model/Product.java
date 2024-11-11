@@ -38,25 +38,23 @@ public class Product {
         return this.name;
     }
 
-    public String makeQuantityMessage() {
-        if (this.quantity == 0) {
-            return " 재고 없음";
-        }
-        return " " + this.quantity + "개";
+    public String formatQuantityMessage() {
+        return (this.quantity == 0) ? " 재고 없음" : " " + this.quantity + "개";
     }
 
-    public String makePromotionMessage() {
-        if (!this.promotion.equals(NULL_PROMOTION)) {
-            return " " + this.promotion;
-        }
-        return "";
+    public String formatPromotionMessage() {
+        return (!NULL_PROMOTION.equals(this.promotion)) ? " " + this.promotion : "";
     }
 
-    public String getProductStockInfo() {
-        String stockInfo = "- "
-                + this.name + " " + String.format("%,d", this.price) + "원"
-                + makeQuantityMessage()
-                + makePromotionMessage();
-        return stockInfo;
+    public String makeProductStockInfoMessage() {
+        return new StringBuilder()
+                .append("- ")
+                .append(this.name)
+                .append(" ")
+                .append(String.format("%,d", this.price))
+                .append("원")
+                .append(formatQuantityMessage())
+                .append(formatPromotionMessage())
+                .toString();
     }
 }

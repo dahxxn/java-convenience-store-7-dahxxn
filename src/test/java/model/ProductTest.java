@@ -54,15 +54,15 @@ public class ProductTest {
     @Test
     @DisplayName("재고 메시지 생성 테스트")
     public void 재고_메시지_생성_테스트() {
-        assertEquals(" 10개", promotionProduct.makeQuantityMessage());
-        assertEquals(" 재고 없음", product.makeQuantityMessage());
+        assertEquals(" 10개", promotionProduct.formatQuantityMessage());
+        assertEquals(" 재고 없음", product.formatQuantityMessage());
     }
 
     @Test
     @DisplayName("프로모션 메시지 생성 테스트")
     public void 프로모션_메시지_생성_테스트() {
-        assertEquals(" 반짝할인", promotionProduct.makePromotionMessage());
-        assertEquals("", product.makePromotionMessage());
+        assertEquals(" 반짝할인", promotionProduct.formatPromotionMessage());
+        assertEquals("", product.formatPromotionMessage());
     }
 
     @Test
@@ -71,8 +71,8 @@ public class ProductTest {
         String expectedInfoWithPromotion = "- 콜라 1,000원 10개 반짝할인";
         String expectedInfoWithoutPromotion = "- 사이다 1,500원 재고 없음";
 
-        assertEquals(expectedInfoWithPromotion, promotionProduct.getProductStockInfo());
-        assertEquals(expectedInfoWithoutPromotion, product.getProductStockInfo());
+        assertEquals(expectedInfoWithPromotion, promotionProduct.makeProductStockInfoMessage());
+        assertEquals(expectedInfoWithoutPromotion, product.makeProductStockInfoMessage());
     }
 
 }
