@@ -1,5 +1,6 @@
 package controller;
 
+import dto.ReceiptInfoDto;
 import java.util.HashMap;
 import model.ProductInventory;
 import model.PromotionInventory;
@@ -52,10 +53,20 @@ public class OrderController {
         discountService.checkMemberShipDiscount();
     }
 
+    public ReceiptInfoDto generateReceiptInfo() {
+        return new ReceiptInfoDto(
+                shoppingInfo.getTotalProductInfo(),
+                shoppingInfo.getTotalPromotionInfo(),
+                shoppingInfo.getTotalCostInfo(),
+                shoppingInfo.getPromotionDiscountPrice(),
+                shoppingInfo.getMemberShipDiscountPrice(),
+                shoppingInfo.getRealCost()
+        );
+    }
+    
     public void showReceipts() {
-        outputView.printReceipt(shoppingInfo.getTotalProductInfo(), shoppingInfo.getTotalPromotionInfo(),
-                shoppingInfo.getTotalCostInfo(), shoppingInfo.getPromotionDiscountPrice(),
-                shoppingInfo.getMemberShipDiscountPrice(), shoppingInfo.getRealCost());
+        ReceiptInfoDto receiptInfo = generateReceiptInfo();
+        outputView.printReceipt(receiptInfo);
         shoppingInfo.updateProductInventory();
     }
 
