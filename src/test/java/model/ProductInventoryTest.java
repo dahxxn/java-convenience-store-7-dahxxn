@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import dto.ProductInfoDto;
 import error.ExceptionMessage;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class ProductInventoryTest {
@@ -22,7 +21,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품 인벤토리에 새로운 프로모션 상품 정보를 추가하는 테스트입니다. ")
     public void 프로모션_상품_추가_테스트() {
         String productName = "환타";
         int quantity = 100;
@@ -37,7 +35,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품 인벤토리에 새로운 프로모션이 없는 상품 정보를 추가하는 테스트입니다. ")
     public void 프로모션_없는_상품_추가_테스트() {
         String productName = "제로제로콜라";
         int quantity = 200;
@@ -52,7 +49,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품 인벤토리에 존재하지 않는 프로모션을 가진 상품 정보를 추가할때 예외가 발생하는 테스트입니다. ")
     public void 프로모션_상품_추가_예외_테스트() {
         String productName = "상품A";
         int quantity = 50;
@@ -66,7 +62,39 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품 인벤토리에 존재하지 않는 상품을 확인하는 경우 예외를 발생시키는 테스트입니다. ")
+    public void 상품_이름으로_찾아서_반환_테스트() {
+        String productName = "찾을 상품";
+        int quantity = 100;
+        int price = 1500;
+
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, quantity, price, "null");
+        productInventory.addProduct(productInfoDto);
+
+        Product foundProduct = productInventory.findProduct(productName);
+        assertEquals(productName, foundProduct.getName());
+        assertEquals(quantity, foundProduct.getQuantity());
+        assertEquals(price, foundProduct.getPrice());
+    }
+
+    @Test
+    public void 프로모션_상품_이름으로_찾아서_반환_테스트() {
+        String productName = "찾을 프로모션 상품";
+        int quantity = 50;
+        int price = 2000;
+        String promotion = "탄산2+1";
+
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, quantity, price, promotion);
+        productInventory.addProduct(productInfoDto);
+
+        Product foundProduct = productInventory.findPromotionProduct(productName);
+        assertEquals(productName, foundProduct.getName());
+        assertEquals(quantity, foundProduct.getQuantity());
+        assertEquals(price, foundProduct.getPrice());
+        assertEquals(promotion, foundProduct.getPromotion());
+    }
+
+
+    @Test
     public void 상품_존재_여부_확인_테스트_존재하지_않을때() {
         String nonExistProductName = "존재하지않는상품";
 
@@ -76,7 +104,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품 인벤토리에 존재하는 상품을 확인하는 경우 아무런 예외가 발생하지 않는 테스트입니다. ")
     public void 상품_존재_여부_확인_테스트_존재할때() {
         String existProductName = "콜라";
 
@@ -84,7 +111,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품과 구매 수량을 통해 구매 가능 여부를 확인하는 테스트입니다. ")
     public void 구매_가능_여부_테스트() {
         String productName = "환타";
 
@@ -97,7 +123,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품과 구매 수량을 통해, 구매 수량이 판매재고보다 많으면 예외를 발생시키는 테스트입니다. ")
     public void 구매_가능_여부_예외_테스트() {
         String productName = "환타";
 
@@ -112,7 +137,6 @@ public class ProductInventoryTest {
 
 
     @Test
-    @DisplayName("상품 이름으로 해당 상품의 총 재고(일반재고+프로모션재고)를 반환하는 테스트입니다. ")
     public void 상품의_총_재고_반환_테스트() {
         String productName = "환타";
         int stockQuantity = 100;
@@ -130,7 +154,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품 이름으로 해당 상품의 일반재고를 반환하는 테스트 입니다. ")
     public void 상품의_일반재고_반환_테스트() {
         String productName = "제로제로콜라";
         int quantity = 100;
@@ -143,7 +166,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품 이름으로 프로모션 재고를 반환하는 테스트 입니다. ")
     public void 상품의_프로모션_재고_반환_테스트() {
         String productName = "제로제로콜라";
         int quantity = 50;
@@ -156,7 +178,22 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("일반 상품의 재고를 올바르게 차감하는 테스트입니다.")
+    public void 상품_총_재고_수량_반환_테스트() {
+        String productName = "상품D";
+        int generalStockQuantity = 50;
+        int promotionStockQuantity = 30;
+
+        ProductInfoDto productInfoDto = new ProductInfoDto(productName, generalStockQuantity, 1000, "null");
+        ProductInfoDto promotionProductInfoDto = new ProductInfoDto(productName, promotionStockQuantity, 1500, "탄산2+1");
+
+        productInventory.addProduct(productInfoDto);
+        productInventory.addProduct(promotionProductInfoDto);
+
+        int totalCount = productInventory.getTotalProductCount(productName);
+        assertEquals(generalStockQuantity + promotionStockQuantity, totalCount);
+    }
+
+    @Test
     public void 상품_재고_차감_테스트() {
         String productName = "제로제로콜라";
         int initialQuantity = 50;
@@ -172,7 +209,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("프로모션 상품의 재고를 올바르게 차감하는 테스트입니다.")
     public void 프로모션_상품_재고_차감_테스트() {
         String productName = "환타";
         int initialQuantity = 30;
@@ -187,7 +223,6 @@ public class ProductInventoryTest {
     }
 
     @Test
-    @DisplayName("상품의 일반 재고와 프로모션 재고를 함께 차감하는 테스트입니다.")
     public void 총_재고_차감_테스트() {
         String productName = "제로제로콜라";
         int generalStockQuantity = 40;
