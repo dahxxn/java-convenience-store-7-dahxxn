@@ -3,7 +3,7 @@ package model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import dto.TotalProductInfoDto;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ public class ShoppingInfoTest {
     }
 
     public void addProductForTest() {
-        HashMap<String, Integer> purchaseInfo = new HashMap<>();
+        LinkedHashMap<String, Integer> purchaseInfo = new LinkedHashMap<>();
         purchaseInfo.put("콜라", 3); //2+1
         purchaseInfo.put("사이다", 5);
         shoppingInfo.addProduct(purchaseInfo);
@@ -123,7 +123,7 @@ public class ShoppingInfoTest {
 
     @Test
     public void 멤버십_최대_할인_테스트() {
-        HashMap<String, Integer> purchaseInfo = new HashMap<>();
+        LinkedHashMap<String, Integer> purchaseInfo = new LinkedHashMap<>();
         purchaseInfo.put("물", 100);
         shoppingInfo.addProduct(purchaseInfo);
         addProductForTest();

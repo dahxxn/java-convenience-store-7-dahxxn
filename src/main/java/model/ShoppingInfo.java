@@ -5,11 +5,12 @@ import dto.TotalProductInfoDto;
 import dto.TotalPromotionInfoDto;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ShoppingInfo {
-    private final HashMap<String, Integer> product;
-    private final HashMap<String, Integer> promotionProduct;
+    private final LinkedHashMap<String, Integer> product;
+    private final LinkedHashMap<String, Integer> promotionProduct;
     private final HashMap<String, Integer> productPrice;
     private boolean isMemberShip;
     private final ProductInventory productInventory;
@@ -18,15 +19,15 @@ public class ShoppingInfo {
     private static int MAX_MEMBERSHIP_DISCOUNT = 8000;
 
     public ShoppingInfo(ProductInventory productInventory, PromotionInventory promotionInventory) {
-        this.product = new HashMap<>();
-        this.promotionProduct = new HashMap<>();
+        this.product = new LinkedHashMap<>();
+        this.promotionProduct = new LinkedHashMap<>();
         this.productPrice = new HashMap<>();
         this.isMemberShip = false;
         this.productInventory = productInventory;
         this.promotionInventory = promotionInventory;
     }
 
-    public void addProduct(HashMap<String, Integer> purchaseInfo) {
+    public void addProduct(LinkedHashMap<String, Integer> purchaseInfo) {
         for (String productName : purchaseInfo.keySet()) {
             int productQuantity = purchaseInfo.get(productName);
             Product product = productInventory.findProduct(productName);
