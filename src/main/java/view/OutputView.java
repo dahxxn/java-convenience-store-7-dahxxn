@@ -1,5 +1,6 @@
 package view;
 
+import dto.ReceiptInfoDto;
 import dto.TotalCostInfoDto;
 import dto.TotalProductInfoDto;
 import dto.TotalPromotionInfoDto;
@@ -62,12 +63,11 @@ public class OutputView {
         printMessage(String.format(OutputMessage.RECEIPTS_COST_INFO.toString(), "내실돈", realCost));
     }
 
-    public void printReceipt(List<TotalProductInfoDto> totalProductInfo,
-                             List<TotalPromotionInfoDto> totalPromotionProductInfo, TotalCostInfoDto totalCostInfo,
-                             int promotionDiscount, int membershipDiscount, int realCost) {
-        printTotalProductInfo(totalProductInfo);
-        printTotalPromotionProductInfo(totalPromotionProductInfo);
-        printTotalCostInfo(totalCostInfo, promotionDiscount, membershipDiscount, realCost);
+    public void printReceipt(ReceiptInfoDto receiptInfo) {
+        printTotalProductInfo(receiptInfo.totalProductInfo());
+        printTotalPromotionProductInfo(receiptInfo.totalPromotionProductInfo());
+        printTotalCostInfo(receiptInfo.totalCostInfo(), receiptInfo.promotionDiscount(),
+                receiptInfo.membershipDiscount(), receiptInfo.realCost());
     }
 
 
