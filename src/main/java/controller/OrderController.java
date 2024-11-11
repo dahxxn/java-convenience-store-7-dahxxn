@@ -1,7 +1,7 @@
 package controller;
 
 import dto.ReceiptInfoDto;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import model.ProductInventory;
 import model.PromotionInventory;
 import model.ShoppingInfo;
@@ -32,7 +32,7 @@ public class OrderController {
         outputView.printCurrentStock(productInventory.getProductStockInfo());
     }
 
-    public HashMap<String, Integer> getPurchaseInfo() {
+    public LinkedHashMap<String, Integer> getPurchaseInfo() {
         String guideMessage = OutputMessage.INPUT_PURCHASE_INFO_GUIDE_MESSAGE
                 + OutputMessage.INPUT_PURCHASE_INFO_EXAMPLE_MESSAGE.toString();
         return inputView.readPurchaseInfo(guideMessage);
@@ -42,7 +42,7 @@ public class OrderController {
         outputView.printWelcomeMessage();
         showProductInventory();
 
-        HashMap<String, Integer> purchaseInfo = getPurchaseInfo();
+        LinkedHashMap<String, Integer> purchaseInfo = getPurchaseInfo();
 
         shoppingInfo.addProduct(purchaseInfo);
     }
@@ -63,7 +63,7 @@ public class OrderController {
                 shoppingInfo.getRealCost()
         );
     }
-    
+
     public void showReceipts() {
         ReceiptInfoDto receiptInfo = generateReceiptInfo();
         outputView.printReceipt(receiptInfo);
