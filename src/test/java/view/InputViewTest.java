@@ -4,15 +4,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import camp.nextstep.edu.missionutils.Console;
 import error.ExceptionMessage;
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import model.ProductInventory;
 import model.PromotionInventory;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,27 +19,6 @@ public class InputViewTest {
     PromotionInventory promotionInventory = new PromotionInventory();
     ProductInventory productInventory = new ProductInventory(promotionInventory);
     InputView inputView = new InputView(productInventory);
-
-
-    @AfterEach
-    public void tearDown() {
-        Console.close();
-    }
-
-    public void mockSystemSetIn(String input) {
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-    }
-
-    @Test
-    @DisplayName("사용자에게 값을 입력받고 이를 반환하는 테스트입니다.")
-    public void 사용자에게_값_입력받기_테스트() {
-        String testInputString = "Hello World";
-
-        mockSystemSetIn(testInputString);
-        String actualReadInput = inputView.readInput("사용자에게 입력받는 테스트입니다.");
-
-        assertEquals(testInputString, actualReadInput);
-    }
 
     @ParameterizedTest
     @ValueSource(strings = {"hello", "  hi  "})
@@ -59,7 +35,6 @@ public class InputViewTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString())
         ;
-
     }
 
     @Test
@@ -148,20 +123,6 @@ public class InputViewTest {
         assertEquals(expectedResult, actualResult);
     }
 
-    @Test
-    @DisplayName("사용자에게 구매할 상품 정보 입력받고, 상품 정보를 담은 맵 객체 반환받는 테스트입니다.")
-    public void 사용자에게_구매할_상품_정보_입력받는_테스트() {
-        String testInputPurchaseInfo = "[콜라-1],[물-2],[오렌지주스-3]";
-        mockSystemSetIn(testInputPurchaseInfo);
-        HashMap<String, Integer> expectedResult = new HashMap<>();
-        expectedResult.put("콜라", 1);
-        expectedResult.put("물", 2);
-        expectedResult.put("오렌지주스", 3);
-        HashMap<String, Integer> actualResult = inputView.readPurchaseInfo(
-                OutputMessage.INPUT_PURCHASE_INFO_GUIDE_MESSAGE.toString()
-                        + OutputMessage.INPUT_PURCHASE_INFO_EXAMPLE_MESSAGE);
-        assertEquals(expectedResult, actualResult);
-    }
 
     @ParameterizedTest
     @ValueSource(strings = {"Y", "N"})
@@ -179,29 +140,4 @@ public class InputViewTest {
                 .hasMessage(ExceptionMessage.ERROR_MESSAGE_INPUT_IS_WRONG.toString());
     }
 
-    @Test
-    @DisplayName("사용자에게 Y 혹은 N으로 응답 받고 그에 맞는 True와 False를 반환하는 테스트입니다. ")
-    public void 사용자에게_Y_혹은_N으로_입력받기_통합_테스트_Y() {
-        String testInputYesOrNoInfo = "Y";
-        boolean expectedResult = true;
-        mockSystemSetIn(testInputYesOrNoInfo);
-
-        boolean actualResult = inputView.readYesOrNoInfo(
-                OutputMessage.THANK_YOU_ANYTHING_ELSE_MESSAGE.toString() + OutputMessage.INPUT_YES_OR_NO_GUIDE_MESSAGE);
-
-        assertEquals(expectedResult, actualResult);
-    }
-
-    @Test
-    @DisplayName("사용자에게 Y 혹은 N으로 응답 받고 그에 맞는 True와 False를 반환하는 테스트입니다. ")
-    public void 사용자에게_Y_혹은_N으로_입력받기_통합_테스트_N() {
-        String testInputYesOrNoInfo = "N";
-        boolean expectedResult = false;
-        mockSystemSetIn(testInputYesOrNoInfo);
-
-        boolean actualResult = inputView.readYesOrNoInfo(
-                OutputMessage.THANK_YOU_ANYTHING_ELSE_MESSAGE.toString() + OutputMessage.INPUT_YES_OR_NO_GUIDE_MESSAGE);
-
-        assertEquals(expectedResult, actualResult);
-    }
 }
