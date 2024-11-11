@@ -14,7 +14,7 @@ public class DiscountService {
     private final ShoppingInfo shoppingInfo;
     private final ProductInventory productInventory;
     private final PromotionInventory promotionInventory;
-    InputView inputView;
+    private final InputView inputView;
 
     public DiscountService(ShoppingInfo shoppingInfo, ProductInventory productInventory,
                            PromotionInventory promotionInventory) {
