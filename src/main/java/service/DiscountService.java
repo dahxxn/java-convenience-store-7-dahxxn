@@ -43,27 +43,35 @@ public class DiscountService {
         setCount *= (-1);
         int promotionSetCount = promotion.checkPromotionPossible(buyCount - setCount, promotionStock);
         shoppingInfo.addPromotionProductQuantity(productName, promotionSetCount);
-
-        String guideMessage = OutputMessage.INPUT_NON_PROMOTION_GUIDE_MESSAGE.formatMessage(productName, setCount)
-                + OutputMessage.INPUT_YES_OR_NO_GUIDE_MESSAGE;
-        boolean answer = inputView.readYesOrNoInfo(guideMessage);
+        boolean answer = askNonPromotionNotice(productName, setCount);
         if (!answer) {
             shoppingInfo.subProductQuantity(productName, setCount);
         }
     }
 
+    public boolean askNonPromotionNotice(String productName, int count) {
+        String guideMessage =
+                OutputMessage.INPUT_NON_PROMOTION_GUIDE_MESSAGE.formatMessage(productName, count)
+                        + OutputMessage.INPUT_YES_OR_NO_GUIDE_MESSAGE;
+        return inputView.readYesOrNoInfo(guideMessage);
+    }
+
     public void handlePromotionPossible(String productName, Promotion promotion, int remainBuyCount,
                                         int remainStockCount) {
         if (promotion.checkGetMorePromotion(remainBuyCount, remainStockCount)) {
-            String guideMessage =
-                    OutputMessage.INPUT_PROMOTION_GUIDE_MESSAGE.formatMessage(productName, promotion.getGetCount())
-                            + OutputMessage.INPUT_YES_OR_NO_GUIDE_MESSAGE;
-            boolean answer = inputView.readYesOrNoInfo(guideMessage);
+            boolean answer = askGetMorePromotion(productName, promotion.getGetCount());
             if (answer) {
                 shoppingInfo.addPromotionProductQuantity(productName, promotion.getGetCount());
                 shoppingInfo.addProductQuantity(productName, promotion.getGetCount());
             }
         }
+    }
+
+    public boolean askGetMorePromotion(String productName, int count) {
+        String guideMessage =
+                OutputMessage.INPUT_PROMOTION_GUIDE_MESSAGE.formatMessage(productName, count)
+                        + OutputMessage.INPUT_YES_OR_NO_GUIDE_MESSAGE;
+        return inputView.readYesOrNoInfo(guideMessage);
     }
 
     public void calculatePromotionProduct(String productName, int buyCount) {
@@ -74,6 +82,11 @@ public class DiscountService {
             handlePromotionImpossible(productName, promotion, buyCount, setCount, promotionStock);
             return;
         }
+        processPromotion(productName, setCount, buyCount, promotionStock, promotion);
+    }
+
+    private void processPromotion(String productName, int setCount, int buyCount, int promotionStock,
+                                  Promotion promotion) {
         shoppingInfo.addPromotionProductQuantity(productName, setCount);
         int remainBuyCount = promotion.calculateRemainingCount(setCount, buyCount);
         int remainStockCount = promotion.calculateRemainingCount(setCount, promotionStock);
@@ -94,7 +107,6 @@ public class DiscountService {
     public void checkMemberShipDiscount() {
         String guideMessage =
                 OutputMessage.INPUT_MEMBERSHIP_GUID_MESSAGE + OutputMessage.INPUT_YES_OR_NO_GUIDE_MESSAGE.toString();
-
         boolean answer = inputView.readYesOrNoInfo(guideMessage);
         shoppingInfo.setMemberShip(answer);
     }
